@@ -1,28 +1,19 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('users')
-export class UserEntity {
+@Entity('products')
+export class ProductEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  fullName: string;
+  title: string;
 
-  @Column({ unique: true })
-  email: string;
+  @Column()
+  price: number;
 
-  @Column({ nullable: true })
-  password?: string;
+  @Column()
+  imageUrl: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
+  @Column()
+  category: number;
 }

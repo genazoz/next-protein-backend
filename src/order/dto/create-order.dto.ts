@@ -1,19 +1,12 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
-export interface OutputBlockData {
-  id?: string;
-  type: 'paragraph' | string;
-  data: any;
-}
-
-export class CreatePostDto {
+export class CreateOrderDto {
   @IsString()
-  title: string;
+  status: string;
 
-  @IsArray()
-  body: OutputBlockData[];
+  @IsNotEmpty()
+  price: number;
 
-  @IsOptional()
-  @IsArray()
-  tags: string;
+  @IsNotEmpty()
+  count: number;
 }

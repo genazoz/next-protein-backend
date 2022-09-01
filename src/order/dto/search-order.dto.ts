@@ -1,8 +1,5 @@
-export class SearchPostDto {
-  title: string;
-  body: string;
-  views: 'DESC' | 'ASC';
-  limit: number;
-  take: number;
-  tag: string;
+export class SearchOrderDto {
+  status: string;
+  price: number;
+  count: number;
 }

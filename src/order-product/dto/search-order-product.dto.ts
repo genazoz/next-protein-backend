@@ -1,4 +1,4 @@
-export class SearchProductDto {
+export class SearchOrderProductDto {
   title?: string;
   categories?: string;
   limit: number;

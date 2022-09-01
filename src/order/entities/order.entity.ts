@@ -6,31 +6,24 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { OutputBlockData } from '../dto/create-post.dto';
 import { UserEntity } from '../../user/entities/user.entity';
 
-@Entity('posts')
-export class PostEntity {
+@Entity('orders')
+export class OrderEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  title: string;
-
-  @Column({ type: 'jsonb' })
-  body: OutputBlockData[];
+  status: string;
 
   @Column()
-  description: string;
+  price: number;
 
-  @ManyToOne(() => UserEntity, { eager: true })
+  @Column()
+  count: number;
+
+  @ManyToOne(() => UserEntity)
   user: UserEntity;
-
-  @Column({ default: 0 })
-  views: number;
-
-  @Column({ nullable: true })
-  tags?: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderProductEntity } from './entities/order-product.entity';
-import { SearchOrderProductDto } from './dto/search-order-product.dto';
-import { paginate } from 'nestjs-typeorm-paginate';
+import { CreateOrderProductDto } from './dto/create-order-product.dto';
 
 @Injectable()
 export class OrderProductService {
@@ -12,31 +11,17 @@ export class OrderProductService {
     private repository: Repository<OrderProductEntity>,
   ) {}
 
-  async paginate(dto: SearchOrderProductDto) {
-    const qb = this.repository.createQueryBuilder('c');
-
-    if (dto.title) {
-      qb.andWhere(`c.title ILIKE :title`);
-      qb.setParameters({
-        title: `%${dto.title}%`,
-      });
-    }
-
-    if (dto.categories) {
-      const arr = dto.categories.split(',');
-      const categories = [...arr.map((item) => parseInt(item))];
-
-      qb.andWhere('c.category IN (:...categories)', { categories });
-    }
-
-    const limit = dto.limit;
-    const route = 'http://localhost:8888/products';
-    const page = dto.page;
-
-    return paginate<OrderProductEntity>(qb, { limit, page, route });
+  create(dto: CreateOrderProductDto) {
+    return this.repository.save({
+      title: dto.title,
+      price: dto.price,
+      imageUrl: dto.imageUrl,
+      category: dto.category,
+      orderId: dto.orderId,
+    });
   }
 
-  findById(id: number) {
-    return this.repository.findOneBy({ id: id });
+  findByOrderId(id: number) {
+    return this.repository.findBy({ orderId: id });
   }
 }

@@ -3,30 +3,26 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-post.dto';
-import { UpdateOrderDto } from './dto/update-post.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PostEntity } from './entities/post.entity';
-import { SearchOrderDto } from './dto/search-post.dto';
+import { OrderEntity } from './entities/order.entity';
+import { SearchOrderDto } from './dto/search-order.dto';
 
 @Injectable()
-export class PostService {
+export class OrderService {
   constructor(
-    @InjectRepository(PostEntity)
-    private repository: Repository<PostEntity>,
+    @InjectRepository(OrderEntity)
+    private repository: Repository<OrderEntity>,
   ) {}
 
   create(dto: CreateOrderDto, userId: number) {
-    const firstParagraph = dto.body.find((obj) => obj.type === 'paragraph')
-      ?.data?.text;
-
     return this.repository.save({
-      title: dto.title,
-      body: dto.body,
-      tags: dto.tags,
+      status: dto.status,
+      price: dto.price,
+      count: dto.count,
       user: { id: userId },
-      description: firstParagraph || '',
     });
   }
 
@@ -43,30 +39,22 @@ export class PostService {
 
     qb.leftJoinAndSelect('p.user', 'user');
 
-    qb.limit(dto.limit || 0);
-    qb.take(dto.take || 10);
-
-    if (dto.views) {
-      qb.orderBy('views', dto.views);
+    if (dto.status) {
+      qb.where(`p.status ILIKE :status`);
     }
 
-    if (dto.body) {
-      qb.andWhere(`p.body ILIKE :body`);
+    if (dto.price) {
+      qb.andWhere(`p.price ILIKE :price`);
     }
 
-    if (dto.title) {
-      qb.andWhere(`p.title ILIKE :title`);
-    }
-
-    if (dto.tag) {
-      qb.andWhere(`p.tags ILIKE :tag`);
+    if (dto.count) {
+      qb.andWhere(`p.count ILIKE :count`);
     }
 
     qb.setParameters({
-      title: `%${dto.title}%`,
-      body: `%${dto.body}%`,
-      tag: `%${dto.tag}%`,
-      views: dto.views || 'DESC',
+      status: `%${dto.status}%`,
+      price: `%${dto.price}%`,
+      count: `%${dto.count}%`,
     });
 
     const [items, total] = await qb.getManyAndCount();
@@ -74,10 +62,14 @@ export class PostService {
     return { items, total };
   }
 
+  async findByUser(userId: number) {
+    return this.repository.findBy({ user: { id: userId } });
+  }
+
   async popular() {
     const qb = this.repository.createQueryBuilder();
 
-    qb.orderBy('views', 'DESC');
+    qb.orderBy('id', 'DESC');
     qb.limit(10);
 
     const [items, total] = await qb.getManyAndCount();
@@ -86,14 +78,6 @@ export class PostService {
   }
 
   async findOne(id: number) {
-    const qb = await this.repository.createQueryBuilder('posts');
-
-    await qb
-      .whereInIds(id)
-      .update()
-      .set({ views: () => 'views + 1' })
-      .execute();
-
     return this.repository.findOneBy({ id: id });
   }
 
@@ -104,15 +88,11 @@ export class PostService {
       throw new NotFoundException('Статья не найдена');
     }
 
-    const firstParagraph = dto.body.find((obj) => obj.type === 'paragraph')
-      ?.data?.text;
-
     return this.repository.update(id, {
-      title: dto.title,
-      body: dto.body,
-      tags: dto.tags,
+      status: dto.status,
+      price: dto.price,
+      count: dto.count,
       user: { id: userId },
-      description: firstParagraph || '',
     });
   }
 
@@ -120,11 +100,11 @@ export class PostService {
     const find = await this.repository.findOneBy({ id: +id });
 
     if (!find) {
-      throw new NotFoundException('Статья не найдена');
+      throw new NotFoundException('Заказ не найден');
     }
 
     if (find.user.id !== userId) {
-      throw new ForbiddenException('Нет доступа к этой статье');
+      throw new ForbiddenException('Нет доступа к этому заказу');
     }
 
     return this.repository.delete(id);

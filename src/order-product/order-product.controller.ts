@@ -1,18 +1,20 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { OrderProductService } from './order-product.service';
-import { SearchProductDto } from './dto/search-order-product.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreateOrderProductDto } from './dto/create-order-product.dto';
 
-@Controller('products')
-export class ProductController {
-  constructor(private readonly productService: OrderProductService) {}
+@Controller('order-products')
+export class OrderProductController {
+  constructor(private readonly orderProductService: OrderProductService) {}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findById(+id);
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(@Body() createOrderProductDto: CreateOrderProductDto) {
+    return this.orderProductService.create(createOrderProductDto);
   }
 
-  @Get()
-  index(@Query() dto: SearchOrderProductDto) {
-    return this.productService.paginate(dto);
+  @Get('/findByOrder/:id')
+  find(@Param('id') id: string) {
+    return this.orderProductService.findByOrderId(+id);
   }
 }

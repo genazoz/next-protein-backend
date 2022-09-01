@@ -1,6 +1,6 @@
 export class SearchProductDto {
-  email?: string;
-  fullName?: string;
+  title?: string;
+  categories?: string;
   limit: number;
-  take: number;
+  page?: number;
 }

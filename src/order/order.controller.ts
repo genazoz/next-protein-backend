@@ -9,22 +9,21 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { PostService } from './post.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { SearchPostDto } from './dto/search-post.dto';
+import { OrderService } from './order.service';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
+import { SearchOrderDto } from './dto/search-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorators';
-import { UserEntity } from '../user/entities/user.entity';
 
-@Controller('posts')
-export class PostController {
-  constructor(private readonly postService: PostService) {}
+@Controller('orders')
+export class OrderController {
+  constructor(private readonly orderService: OrderService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@User() userId: number, @Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto, userId);
+  create(@User() userId: number, @Body() createOrderDto: CreateOrderDto) {
+    return this.orderService.create(createOrderDto, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -32,34 +31,40 @@ export class PostController {
   update(
     @User() userId: number,
     @Param('id') id: string,
-    @Body() updatePostDto: UpdatePostDto,
+    @Body() updatePostDto: UpdateOrderDto,
   ) {
-    return this.postService.update(+id, updatePostDto, userId);
+    return this.orderService.update(+id, updatePostDto, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  getByUser(@User() userId: number) {
+    return this.orderService.findByUser(userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@User() userId: number, @Param('id') id: string) {
-    return this.postService.remove(+id, userId);
+    return this.orderService.remove(+id, userId);
   }
 
   @Get()
   findAll() {
-    return this.postService.findAll();
+    return this.orderService.findAll();
   }
 
   @Get('/popular')
   getPopularPosts() {
-    return this.postService.popular();
+    return this.orderService.popular();
   }
 
   @Get('/search')
-  searchPosts(@Query() dto: SearchPostDto) {
-    return this.postService.search(dto);
+  searchPosts(@Query() dto: SearchOrderDto) {
+    return this.orderService.search(dto);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
+    return this.orderService.findOne(+id);
   }
 }
