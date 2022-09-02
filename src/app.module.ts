@@ -19,6 +19,9 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forRoot({
       url: process.env.DATABASE_URL,
       type: 'postgres',
+      ssl: {
+        rejectUnauthorized: false,
+      },
       entities: [UserEntity, ProductEntity, OrderEntity, OrderProductEntity],
       synchronize: true,
     }),
