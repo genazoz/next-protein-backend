@@ -10,8 +10,11 @@ export class CreateOrderProductDto {
   @IsString()
   imageUrl: string;
 
+  category: number;
+
+  @IsNotEmpty()
+  prodId: number;
+
   @IsNotEmpty()
   orderId: number;
-
-  category: number;
 }

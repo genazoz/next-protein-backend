@@ -18,5 +18,8 @@ export class OrderProductEntity {
   category: number;
 
   @Column()
+  prodId: number;
+
+  @Column()
   orderId: number;
 }

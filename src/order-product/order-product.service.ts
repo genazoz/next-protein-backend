@@ -17,6 +17,7 @@ export class OrderProductService {
       price: dto.price,
       imageUrl: dto.imageUrl,
       category: dto.category,
+      prodId: dto.prodId,
       orderId: dto.orderId,
     });
   }
