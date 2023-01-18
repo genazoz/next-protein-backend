@@ -17,7 +17,7 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      url: 'postgresql://postgres:********@containers-us-west-124.railway.app:7081/railway',
+      url: process.env.DATABASE_URL,
       type: 'postgres',
       ssl: {
         rejectUnauthorized: false,
