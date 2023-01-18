@@ -30,7 +30,7 @@ export class ProductService {
     }
 
     const limit = dto.limit;
-    const route = 'https://protein-nest.herokuapp.com/products';
+    const route = 'https://protein-nest.up.railway.app/products';
     const page = dto.page;
 
     return paginate<ProductEntity>(qb, { limit, page, route });
